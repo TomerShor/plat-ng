@@ -4,4 +4,7 @@ fmt:
 
 .PHONY: build
 build:
-	docker build --file ./cmd/server/Dockerfile -t go-service .
+	docker build \
+		--file ../../deployment/dockerfiles/go_service/Dockerfile \
+		-t go-service \
+		.

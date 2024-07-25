@@ -1,4 +1,4 @@
-module github.com/TomerShor/plat-ng/services/go-service
+module github.com/TomerShor/plat-ng/services/go_service
 
 go 1.21.1
 
