@@ -5,7 +5,8 @@ import time
 import requests
 import sys
 
-from flask import Flask
+from flask import Flask, request
+from urllib.parse import urljoin
 
 
 class App:
@@ -31,9 +32,15 @@ class App:
         def hello():
             return "Hello World"
 
-        @self.app.route('/hello-go')
-        def hello_go():
-            response = requests.get("http://go-service:8080/")
+        @self.app.route('/go-proxy')
+        def go_proxy():
+            url = os.environ.get("GO_SERVICE_URL", "http://go-service:8000")
+            path = request.args.get('path')
+            if path:
+                url = urljoin(url, path)
+            self.app.logger.info(f"Calling go-service at {url}")
+            response = requests.get(url)
+            self.app.logger.info(f"Response from go-service: {response.text}")
             return response.text
 
         @self.app.route('/status')

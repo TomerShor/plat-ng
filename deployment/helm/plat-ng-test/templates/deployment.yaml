@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plat-ng-deployment
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: plat-ng-deployment
+          image: foo/bar:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+  selector:
+    matchLabels:
+      kubernetes.io/os: linux

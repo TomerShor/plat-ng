@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../templates
+patches:
+#- path: patch.yaml
+  - target:
+      kind: Deployment
+    patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: go-service
+      spec:
+        template:
+          spec:
+            containers:
+            - image: tomershor199/go-service
+  - target:
+      kind: Service
+    patch: |
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: go-service
+      spec:
+        ports:
+        - port: 8000
+          targetPort: 8010
+          name: http
+          protocol: TCP

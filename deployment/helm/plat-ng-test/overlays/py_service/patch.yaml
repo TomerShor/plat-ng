@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: py-service
+spec:
+  template:
+    spec:
+      containers:
+      - image: tomershor199/py-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: py-service
+spec:
+  ports:
+  - port: 8000
+    targetPort: 8020
