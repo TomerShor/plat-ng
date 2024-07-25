@@ -2,9 +2,10 @@ package main
 
 import (
 	"flag"
-	"github.com/TomerShor/plat-ng/services/go-service/pkg/common"
-	"github.com/TomerShor/plat-ng/services/go-service/pkg/server"
+	"github.com/TomerShor/plat-ng/services/go_service/pkg/common"
+	"github.com/TomerShor/plat-ng/services/go_service/pkg/server"
 	"github.com/nuclio/errors"
+	nucliozap "github.com/nuclio/zap"
 	"os"
 )
 
@@ -23,7 +24,16 @@ func main() {
 }
 
 func run(listenPort int, logLevel string) error {
-	server := server.NewServer(listenPort, logLevel)
+	rootLogger, err := nucliozap.NewNuclioZap("app",
+		"console",
+		nil,
+		os.Stdout,
+		os.Stderr,
+		common.ResolveLogLevel(logLevel))
+	if err != nil {
+		return errors.Wrap(err, "Failed to create logger")
+	}
+	server := server.NewServer(listenPort, rootLogger)
 	if err := server.Start(); err != nil {
 		return errors.Wrap(err, "Failed to start server")
 	}

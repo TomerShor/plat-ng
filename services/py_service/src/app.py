@@ -1,5 +1,7 @@
 import logging
 import os
+import time
+
 import requests
 import sys
 
@@ -11,10 +13,12 @@ class App:
         self.app = Flask(__name__)
         self.port = port
         self.host = host or "0.0.0.0"
+        self._start_time = None
         self._configure_logger(log_level)
         self._setup_routes()
 
     def run(self, debug=False, threaded=False):
+        self._start_time = time.time()
         logging.info(f"Starting at port {self.port}")
         # Make it compatible with IPv6 if Linux
         if sys.platform == "linux":
@@ -35,6 +39,14 @@ class App:
         @self.app.route('/status')
         def status():
             return "OK"
+
+        @self.app.route('/runtime')
+        def runtime():
+            run_time = self.calculate_runtime()
+            return f"Uptime: {run_time} seconds"
+
+    def calculate_runtime(self):
+        return time.time() - self._start_time
 
     def _configure_logger(self, level):
         log_level = logging.getLevelName(level.upper())

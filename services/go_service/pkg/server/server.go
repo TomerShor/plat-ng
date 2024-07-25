@@ -2,31 +2,21 @@ package server
 
 import (
 	"fmt"
-	"github.com/TomerShor/plat-ng/services/go-service/pkg/common"
 	"github.com/nuclio/logger"
-	nucliozap "github.com/nuclio/zap"
 	"github.com/valyala/fasthttp"
-	"os"
+	"time"
 )
 
 // Server is a simple http server that uses fasthttp, listens on port 8010 and returns "hello world" on the root path
 type Server struct {
 	listenPort int
 	logger     logger.Logger
+	startTime  time.Time
 }
 
 // NewServer creates a new server
-func NewServer(listenPort int, logSeverity string) *Server {
-	newLogger, err := nucliozap.NewNuclioZap("server",
-		"console",
-		nil,
-		os.Stdout,
-		os.Stderr,
-		common.ResolveLogLevel(logSeverity))
-	if err != nil {
-		panic(err)
-
-	}
+func NewServer(listenPort int, parentLogger logger.Logger) *Server {
+	newLogger := parentLogger.GetChild("server")
 	return &Server{
 		listenPort: listenPort,
 		logger:     newLogger,
@@ -34,7 +24,10 @@ func NewServer(listenPort int, logSeverity string) *Server {
 }
 
 func (s *Server) Start() error {
-	s.logger.Debug("Starting server")
+	s.startTime = time.Now()
+	s.logger.DebugWith("Starting server",
+		"listenPort", s.listenPort,
+		"startTime", s.startTime.String())
 	if err := fasthttp.ListenAndServe(fmt.Sprintf(":%d", s.listenPort), s.requestHandler()); err != nil {
 		panic("Error in ListenAndServe: " + err.Error())
 	}
@@ -54,8 +47,8 @@ func (s *Server) requestHandler() func(ctx *fasthttp.RequestCtx) {
 		switch path {
 		case "/", "/hello":
 			s.handleHello(ctx)
-		case "/goodbye":
-			s.handleGoodbye(ctx)
+		case "/runtime":
+			s.handleRuntime(ctx)
 		default:
 			ctx.Error(fmt.Sprintf("Path not found: %s", path), fasthttp.StatusNotFound)
 		}
@@ -67,7 +60,12 @@ func (s *Server) handleHello(ctx *fasthttp.RequestCtx) {
 	ctx.SetBodyString("Hello World")
 }
 
-func (s *Server) handleGoodbye(ctx *fasthttp.RequestCtx) {
-	s.logger.Debug("Handling goodbye request")
-	ctx.SetBodyString("Goodbye World")
+func (s *Server) handleRuntime(ctx *fasthttp.RequestCtx) {
+	s.logger.Debug("Handling runtime request")
+	runtime := s.calculateRuntime()
+	ctx.SetBodyString("App runtime: " + runtime.String())
+}
+
+func (s *Server) calculateRuntime() time.Duration {
+	return time.Since(s.startTime)
 }
