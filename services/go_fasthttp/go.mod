@@ -1,8 +1,9 @@
-module github.com/TomerShor/plat-ng/services/go_service
+module github.com/TomerShor/plat-ng/services/go_fasthttp
 
 go 1.21.1
 
 require (
+	github.com/buaazp/fasthttprouter v0.1.1
 	github.com/nuclio/errors v0.0.4
 	github.com/nuclio/logger v0.0.1
 	github.com/nuclio/zap v0.2.0

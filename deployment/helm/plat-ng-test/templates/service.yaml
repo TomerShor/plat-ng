@@ -1,11 +1,17 @@
+{{- $top := . -}}
+{{- range $service := .Values.services -}}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: plat-ng-service
+  name: {{ $service.name }}
 spec:
   type: NodePort
   ports:
-    - port: 8080
-      targetPort: http
+    - port: {{ $service.port }}
+      targetPort: {{ $service.targetPort }}
       protocol: TCP
       name: http
+  selector:
+    app: {{ $service.name }}
+{{ end }}

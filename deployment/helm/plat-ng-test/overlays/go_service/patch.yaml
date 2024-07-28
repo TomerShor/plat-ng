@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-service
+  name: go-fasthttp
 spec:
   template:
     spec:
       containers:
-      - image: tomershor199/go-service
+      - image: tomershor199/go-fasthttp
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: go-service
+  name: go-fasthttp
 spec:
   ports:
   - port: 8000

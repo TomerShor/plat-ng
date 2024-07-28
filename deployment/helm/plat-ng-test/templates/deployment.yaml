@@ -1,19 +1,28 @@
+{{- $top := . -}}
+{{- range $service := .Values.services -}}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: plat-ng-deployment
+  name: {{ $service.name }}
 spec:
   replicas: 1
   template:
+    metadata:
+        labels:
+            kubernetes.io/os: linux
+            app: {{ $service.name }}
     spec:
       containers:
-        - name: plat-ng-deployment
-          image: foo/bar:latest
-          imagePullPolicy: IfNotPresent
+        - name: {{ $service.name }}
+          image: {{ $service.image }}
+          imagePullPolicy: {{ $service.imagePullPolicy }}
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: {{ $service.targetPort }}
               protocol: TCP
   selector:
     matchLabels:
       kubernetes.io/os: linux
+      app: {{ $service.name }}
+{{ end }}

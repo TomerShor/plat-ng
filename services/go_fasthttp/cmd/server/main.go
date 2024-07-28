@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"github.com/TomerShor/plat-ng/services/go_service/pkg/common"
-	"github.com/TomerShor/plat-ng/services/go_service/pkg/server"
+	"github.com/TomerShor/plat-ng/services/go_fasthttp/pkg/common"
+	"github.com/TomerShor/plat-ng/services/go_fasthttp/pkg/server"
 	"github.com/nuclio/errors"
 	nucliozap "github.com/nuclio/zap"
 	"os"

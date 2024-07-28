@@ -1,7 +1,7 @@
 import time
 
 import pytest
-import services.py_service.src.app as app
+import services.py_flask.src.app as app
 
 
 def test_calculate_runtime():

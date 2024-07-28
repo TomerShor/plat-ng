@@ -1,7 +1,7 @@
-.PHONY build-go-service:
-build-go-service:
-	cd services/go_service && make build
+.PHONY build-go-fasthttp:
+build-go-fasthttp:
+	cd services/go_fasthttp && make build
 
-.PHONY build-py-service:
-build-py-service:
-	cd services/py_service && make build
+.PHONY build-py-flask:
+build-py-flask:
+	cd services/py_flask && make build

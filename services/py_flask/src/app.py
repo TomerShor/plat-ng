@@ -30,17 +30,17 @@ class App:
     def _setup_routes(self):
         @self.app.route('/')
         def hello():
-            return "Hello World"
+            return "Hello from Py-Flask Service"
 
         @self.app.route('/go-proxy')
         def go_proxy():
-            url = os.environ.get("GO_SERVICE_URL", "http://go-service:8000")
+            url = os.environ.get("GO_SERVICE_URL", "http://go-fasthttp:8000")
             path = request.args.get('path')
             if path:
                 url = urljoin(url, path)
-            self.app.logger.info(f"Calling go-service at {url}")
+            self.app.logger.info(f"Calling go-fasthttp at {url}")
             response = requests.get(url)
-            self.app.logger.info(f"Response from go-service: {response.text}")
+            self.app.logger.info(f"Response from go-fasthttp: {response.text}")
             return response.text
 
         @self.app.route('/status')
@@ -50,7 +50,7 @@ class App:
         @self.app.route('/runtime')
         def runtime():
             run_time = self.calculate_runtime()
-            return f"Uptime: {run_time} seconds"
+            return f"Py-Flask Uptime: {run_time} seconds"
 
     def calculate_runtime(self):
         return time.time() - self._start_time
