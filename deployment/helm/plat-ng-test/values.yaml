@@ -1,0 +1,17 @@
+services:
+  - name: go-fasthttp
+    image: tomershor199/go-fasthttp
+    port: 8000
+    targetPort: 8010
+    replicas: 1
+    imagePullPolicy: Always
+  - name: py-flask
+    image: tomershor199/py-flask
+    port: 8000
+    targetPort: 8020
+    replicas: 1
+    imagePullPolicy: Always
+
+selector:
+  matchLabels:
+    kubernetes.io/os: linux

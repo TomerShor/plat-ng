@@ -1,0 +1,28 @@
+{{- $top := . -}}
+{{- range $service := .Values.services -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $service.name }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+        labels:
+            kubernetes.io/os: linux
+            app: {{ $service.name }}
+    spec:
+      containers:
+        - name: {{ $service.name }}
+          image: {{ $service.image }}
+          imagePullPolicy: {{ $service.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ $service.targetPort }}
+              protocol: TCP
+  selector:
+    matchLabels:
+      kubernetes.io/os: linux
+      app: {{ $service.name }}
+{{ end }}
