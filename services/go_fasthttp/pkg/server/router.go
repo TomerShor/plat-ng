@@ -2,7 +2,8 @@ package server
 
 import (
 	"fmt"
-	"github.com/buaazp/fasthttprouter"
+	"github.com/fate-lovely/phi"
+	"github.com/google/uuid"
 	"github.com/nuclio/errors"
 	"github.com/nuclio/logger"
 	"github.com/valyala/fasthttp"
@@ -10,7 +11,7 @@ import (
 )
 
 type Router struct {
-	router           *fasthttprouter.Router
+	router           *phi.Mux
 	logger           logger.Logger
 	pyServiceAddress string
 	startTime        time.Time
@@ -18,7 +19,7 @@ type Router struct {
 
 func NewRouter(parentLogger logger.Logger, pyServiceAddress string) *Router {
 	return &Router{
-		router:           fasthttprouter.New(),
+		router:           phi.NewRouter(),
 		logger:           parentLogger.GetChild("router"),
 		pyServiceAddress: pyServiceAddress,
 		startTime:        time.Now(),
@@ -38,15 +39,19 @@ func (r *Router) Stop() {
 	r.logger.Debug("Stopping router")
 }
 
+func (r *Router) InstallMiddleware(ctx *fasthttp.RequestCtx) {
+	r.router.Use(r.requestID)
+}
+
 func (r *Router) Handler() fasthttp.RequestHandler {
-	return r.router.Handler
+	return r.router.ServeFastHTTP
 }
 
 func (r *Router) registerRoutes() error {
-	r.router.GET("/", r.index)
-	r.router.GET("/hello", r.hello)
-	r.router.GET("/py-proxy", r.pyProxy)
-	r.router.GET("/runtime", r.runtime)
+	r.router.Get("/", r.index)
+	r.router.Get("/hello", r.hello)
+	r.router.Get("/py-proxy", r.pyProxy)
+	r.router.Get("/runtime", r.runtime)
 
 	return nil
 }
@@ -67,8 +72,16 @@ func (r *Router) pyProxy(ctx *fasthttp.RequestCtx) {
 	url := fmt.Sprintf("%s/%s", r.pyServiceAddress, subPath)
 	r.logger.DebugWith("Proxying request to Python service", "url", url)
 
-	// Redirecting like this doesn't work...
-	ctx.Redirect(url, fasthttp.StatusMovedPermanently)
+	responseBuffer := ctx.Response.Body()
+	statusCode, responseBody, err := fasthttp.Get(responseBuffer, url)
+	if err != nil {
+		r.logger.ErrorWith("Failed to proxy request to Python service", "url", url, "err", err.Error())
+		ctx.SetStatusCode(fasthttp.StatusInternalServerError)
+		return
+	}
+
+	ctx.SetStatusCode(statusCode)
+	ctx.SetBody(responseBody)
 }
 
 func (r *Router) runtime(ctx *fasthttp.RequestCtx) {
@@ -79,4 +92,12 @@ func (r *Router) runtime(ctx *fasthttp.RequestCtx) {
 
 func (r *Router) calculateRuntime() time.Duration {
 	return time.Since(r.startTime)
+}
+
+func (r *Router) requestID(next phi.HandlerFunc) phi.HandlerFunc {
+	id := uuid.New().String()
+	return func(ctx *fasthttp.RequestCtx) {
+		next(ctx)
+		ctx.WriteString(id)
+	}
 }
