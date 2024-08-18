@@ -2,11 +2,13 @@ package main
 
 import (
 	"flag"
+	"os"
+
 	"github.com/TomerShor/plat-ng/services/go_fasthttp/pkg/common"
 	"github.com/TomerShor/plat-ng/services/go_fasthttp/pkg/server"
+
 	"github.com/nuclio/errors"
 	nucliozap "github.com/nuclio/zap"
-	"os"
 )
 
 func main() {

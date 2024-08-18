@@ -2,12 +2,13 @@ package server
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/fate-lovely/phi"
 	"github.com/google/uuid"
 	"github.com/nuclio/errors"
 	"github.com/nuclio/logger"
 	"github.com/valyala/fasthttp"
-	"time"
 )
 
 type Router struct {
@@ -98,6 +99,6 @@ func (r *Router) requestID(next phi.HandlerFunc) phi.HandlerFunc {
 	id := uuid.New().String()
 	return func(ctx *fasthttp.RequestCtx) {
 		next(ctx)
-		ctx.WriteString(id)
+		ctx.WriteString(id) // nolint: errcheck
 	}
 }

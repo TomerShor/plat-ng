@@ -2,11 +2,13 @@ package server
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/TomerShor/plat-ng/services/go_fasthttp/pkg/common"
+
 	"github.com/nuclio/errors"
 	"github.com/nuclio/logger"
 	"github.com/valyala/fasthttp"
-	"time"
 )
 
 // Server is a simple http server that uses fasthttp, listens on port 8010 has some basic routes and can

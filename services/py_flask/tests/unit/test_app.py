@@ -1,6 +1,5 @@
 import time
 
-import pytest
 import services.py_flask.src.app as app
 
 

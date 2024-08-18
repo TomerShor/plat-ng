@@ -23,19 +23,19 @@ class App:
         logging.info(f"Starting at port {self.port}")
         # Make it compatible with IPv6 if Linux
         if sys.platform == "linux":
-            self.app.run(host='::', port=self.port, debug=debug, threaded=threaded)
+            self.app.run(host="::", port=self.port, debug=debug, threaded=threaded)
         else:
             self.app.run(host=self.host, port=self.port, debug=debug, threaded=threaded)
 
     def _setup_routes(self):
-        @self.app.route('/')
+        @self.app.route("/")
         def hello():
             return "Hello from Py-Flask Service"
 
-        @self.app.route('/go-proxy')
+        @self.app.route("/go-proxy")
         def go_proxy():
             url = os.environ.get("GO_SERVICE_URL", "http://go-fasthttp:8000")
-            path = request.args.get('path')
+            path = request.args.get("path")
             if path:
                 url = urljoin(url, path)
             self.app.logger.info(f"Calling go-fasthttp at {url}")
@@ -43,11 +43,11 @@ class App:
             self.app.logger.info(f"Response from go-fasthttp: {response.text}")
             return response.text
 
-        @self.app.route('/status')
+        @self.app.route("/status")
         def status():
             return "OK"
 
-        @self.app.route('/runtime')
+        @self.app.route("/runtime")
         def runtime():
             run_time = self.calculate_runtime()
             return f"Py-Flask Uptime: {run_time} seconds"
@@ -70,13 +70,19 @@ def parse_args():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=os.environ.get("LISTEN_PORT", 8020))
-    parser.add_argument("--log-level", type=str, default=os.environ.get("LOG_LEVEL", "debug"))
-    parser.add_argument("--debugger", action="store_true", default=os.environ.get("DEBUGGER", False))
-    parser.add_argument("--threaded", action="store_true", default=os.environ.get("THREADED", False))
+    parser.add_argument(
+        "--log-level", type=str, default=os.environ.get("LOG_LEVEL", "debug")
+    )
+    parser.add_argument(
+        "--debugger", action="store_true", default=os.environ.get("DEBUGGER", False)
+    )
+    parser.add_argument(
+        "--threaded", action="store_true", default=os.environ.get("THREADED", False)
+    )
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = parse_args()
 
     app = App(log_level=args.log_level, port=int(args.port))

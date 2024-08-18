@@ -1,0 +1,72 @@
+linters:
+  disable-all: true
+  enable:
+    - goconst
+    - gofmt
+    - revive
+    - gosimple
+    - ineffassign
+    - misspell
+    - staticcheck
+    - unconvert
+    - vet
+    - vetshadow
+    - errcheck
+    - govet
+    - typecheck
+    - gocritic
+    - unused
+    - gci
+
+run:
+
+  # timeout for analysis
+  timeout: 5m
+  build-tags:
+    - test_unit
+    - test_integration
+    - test_functional
+    - test_kube
+    - test_local
+    - test_iguazio
+    - test_broken
+
+#  skip-dirs:
+#    - docs
+
+
+linters-settings:
+  revive:
+    rules:
+
+        # avoid  errorf: should replace errors.New(fmt.Sprintf(...)) with fmt.Errorf(...)  messages
+      - name: errorf
+        disabled: true
+
+  gocritic:
+    disabled-checks:
+      - commentFormatting # we dont want to enforce space before the comment text
+
+  gci:
+    sections:
+      - standard
+      - prefix(github.com/TomerShor/plat-ng)
+      - default
+      - blank
+      - dot
+
+    custom-order: true
+
+issues:
+
+  # List of regexps of issue texts to exclude
+  exclude:
+    - "comment on"
+    - "error should be the last"
+
+#  exclude-rules:
+#
+#    # list of excluded linters applied on test files
+#    - path: _test\.go
+#      linters:
+#        - goconst
