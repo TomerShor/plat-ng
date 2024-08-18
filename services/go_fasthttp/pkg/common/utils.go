@@ -1,10 +1,11 @@
 package common
 
 import (
-	nucliozap "github.com/nuclio/zap"
 	"os"
 	"reflect"
 	"strconv"
+
+	nucliozap "github.com/nuclio/zap"
 )
 
 func ResolveLogLevel(level string) nucliozap.Level {
